@@ -12,7 +12,7 @@ public class FullLinkedIterator<T> implements Iterator<List<T>> {
 
 	boolean isInit = false;
 
-	@SafeVarargs
+	@SuppressWarnings("unchecked")
 	public FullLinkedIterator(Iterable<T> root, Function<T, Iterable<T>>... childrensBuilders) {
 		this.root = root;
 		this.childrensBuilders = childrensBuilders;

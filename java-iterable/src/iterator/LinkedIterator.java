@@ -11,7 +11,7 @@ public class LinkedIterator<T> implements Iterator<T> {
 
 	boolean isInit = false;
 
-	@SafeVarargs
+	@SuppressWarnings("unchecked")
 	public LinkedIterator(Iterable<T> root, Function<T, Iterable<T>>... childrensBuilders) {
 		this.root = root;
 		this.childrensBuilders = childrensBuilders;

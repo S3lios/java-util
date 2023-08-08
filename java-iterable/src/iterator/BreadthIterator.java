@@ -70,7 +70,10 @@ public class BreadthIterator<T> implements Iterator<T> {
 		}
 
 		T next = childrens[index].next();
-		index = index + 1 % childrens.length;
+		index++;
+		if (index >= childrens.length) {
+			index = 0;
+		}
 		rebase();
 
 		return next;
