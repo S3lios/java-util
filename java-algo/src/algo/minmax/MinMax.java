@@ -1,4 +1,4 @@
-package main.algo.minmax;
+package algo.minmax;
 
 import java.util.Map;
 
