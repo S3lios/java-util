@@ -9,12 +9,12 @@ import java.util.function.Function;
 
 /**
  * Implementation of a graph using adjacency list.
- * In this implementation, edge can't have null data.
+ * In this implementation, edge can have null data.
  * @see <a href="https://en.wikipedia.org/wiki/Adjacency_list"> Adjacency Matrix</a>
  * @param <V> type of the vertex data
  * @param <E> type of the edge data
  */
-public class AdjListGraph<V,E> implements Graph<V, E> {
+public class AdjListGraph<V,E> extends Graph<V, E> {
 
 	private int indexVertexGenerator = 0;
 
@@ -42,10 +42,10 @@ public class AdjListGraph<V,E> implements Graph<V, E> {
 
 
 	@Override
-	public void addVertex(V data) {
+	public int addVertex(V data) {
 		vertices.put(indexVertexGenerator, data);
 		edges.put(indexVertexGenerator, new HashMap<>());
-		indexVertexGenerator++;
+		return indexVertexGenerator++;
 	}
 
 	@Override

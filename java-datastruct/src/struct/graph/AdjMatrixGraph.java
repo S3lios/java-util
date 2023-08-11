@@ -13,7 +13,7 @@ import java.util.function.Function;
  * @param <V> type of the vertex data
  * @param <E> type of the edge data
  */
-public class AdjMatrixGraph<V,E> implements Graph<V,E> {
+public class AdjMatrixGraph<V,E> extends Graph<V,E> {
 
 	public static final int DEFAULT_CAPACITY = 10;
 
@@ -64,7 +64,7 @@ public class AdjMatrixGraph<V,E> implements Graph<V,E> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void addVertex(V data) {
+	public int addVertex(V data) {
 		vertexCount++;
 		if (vertexCount > capacity) {
 			capacity *= 2;
@@ -80,6 +80,7 @@ public class AdjMatrixGraph<V,E> implements Graph<V,E> {
 			edges = newEdges;
 		}
 		vertices[vertexCount - 1] = data;
+		return vertexCount - 1;
 	}
 
 	/**

@@ -13,8 +13,7 @@ public class Drawner {
 	public Drawner(Graphics g) {
 		this.g = g;
 	}
-
-
+	
 	public void drawScatterLine(int x1, int y1, int x2, int y2, int lineSize,  int jumpSize) {
 		Vector2D v1 = new Vector2D(x1, y1);
 		Vector2D v2 = new Vector2D(x2, y2);
@@ -28,9 +27,6 @@ public class Drawner {
 			Vector2D v4 = v1.add(v.mul((i+1)/n));
 			drawLine((int)v3.x, (int)v3.y, (int)v4.x, (int)v4.y);
 		}
-
-
-
 	}
 
 
