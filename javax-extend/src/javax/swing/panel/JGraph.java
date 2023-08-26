@@ -20,7 +20,7 @@ import functionnal.TriProcedure;
 import graph.AdjListGraph;
 import graph.Graph;
 
-public class GraphPanel<V,E> extends JPanel implements MouseListener, MouseWheelListener, MouseMotionListener, KeyListener   {
+public class JGraph<V,E> extends JPanel implements MouseListener, MouseWheelListener, MouseMotionListener, KeyListener   {
 	
 	Graph<V,E> graph;
 	Graph<Pair<Double, Double>, Void> posGraph;
@@ -28,32 +28,42 @@ public class GraphPanel<V,E> extends JPanel implements MouseListener, MouseWheel
 	TriProcedure<Graphics, E, Pair<Integer, Integer>> edgeDrawer;
 
 
-	public GraphPanel() {
+	public JGraph() {
 		this.addKeyListener(this);
 		this.addMouseListener(this);
 		this.addMouseWheelListener(this);
 		this.addMouseMotionListener(this);
 	}
 
-	public GraphPanel(Graph<V,E> graph) {
+	public JGraph(Graph<V,E> graph) {
 		this();
 		this.graph = graph;
 		this.vertexDrawer = (g, v, p) -> {g.drawString(v.toString(), p.first, p.second);};
 		this.edgeDrawer = (g, e, p) -> {g.drawString(e.toString(), p.first, p.second);};
 	}
 
-	public GraphPanel(Graph<V,E> graph, TriProcedure<Graphics, V, Pair<Integer, Integer>> vertexDrawer, TriProcedure<Graphics, E, Pair<Integer, Integer>> edgeDrawer) {
+	public JGraph(Graph<V,E> graph, TriProcedure<Graphics, V, Pair<Integer, Integer>> vertexDrawer, TriProcedure<Graphics, E, Pair<Integer, Integer>> edgeDrawer) {
 		this();
 		this.graph = graph;
 		this.vertexDrawer = vertexDrawer;
 		this.edgeDrawer = edgeDrawer;
 	}
 
+	public void update() {
+		this.posGraph = this.calcGraph();
+		this.repaint();
+	}
+
+	public void setGraph(Graph<V,E> graph) {
+		this.graph = graph;
+		this.update();
+	}
+
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		if (this.posGraph == null) this.posGraph = this.calcGraph();
 
+		if (this.posGraph == null) return;
 
 		for (Integer vertex : this.posGraph) {
 			int x = (int) (double) posGraph.getVertexData(vertex).first;
@@ -76,7 +86,8 @@ public class GraphPanel<V,E> extends JPanel implements MouseListener, MouseWheel
 		Set<Integer> visited = new HashSet<>();
 		Graph<Pair<Double, Double>, Void> graph = new AdjListGraph<>();
 
-		for (Integer vertex : this.graph) {
+		int n = this.graph.getVertexCount();
+		for (int x = 0; x < n; x++) {
 			graph.addVertex(new Pair<>(0., 0.));
 		}
 
@@ -88,9 +99,7 @@ public class GraphPanel<V,E> extends JPanel implements MouseListener, MouseWheel
 	}
 
 	private void calcGraph(Graph<Pair<Double, Double>, Void> graph, int vertex, int minX, int maxX, int minY, int maxY,  Set<Integer> visited) {
-		
 		visited.add(vertex);
-
 		List<Integer> neighbors = this.graph.getNeighbors(vertex);
 		int n = neighbors.size();
 		if (n == 0) return;
@@ -109,8 +118,8 @@ public class GraphPanel<V,E> extends JPanel implements MouseListener, MouseWheel
 		}
 	}
 
-	public void rescale(double factor, int x, int y) {
-		if (this.posGraph == null) this.posGraph = this.calcGraph();
+	private void rescale(double factor, int x, int y) {
+		if (this.posGraph == null) return;
 		for (Integer vertex : this.posGraph) {
 			this.posGraph.getVertexData(vertex).first = (this.posGraph.getVertexData(vertex).first - x) * factor + x;
 			this.posGraph.getVertexData(vertex).second = (this.posGraph.getVertexData(vertex).second - y) * factor + y;
@@ -120,7 +129,7 @@ public class GraphPanel<V,E> extends JPanel implements MouseListener, MouseWheel
 	}
 
 	private void shift(int dx, int dy) {
-		if (this.posGraph == null) this.posGraph = this.calcGraph();
+		if (this.posGraph == null) return;
 		for (Integer vertex : this.posGraph) {
 			this.posGraph.getVertexData(vertex).first += dx;
 			this.posGraph.getVertexData(vertex).second += dy;
@@ -130,7 +139,7 @@ public class GraphPanel<V,E> extends JPanel implements MouseListener, MouseWheel
 	}
 
 	private void scretch(double factorX, int x) {
-		if (this.posGraph == null) this.posGraph = this.calcGraph();
+		if (this.posGraph == null) return;
 		for (Integer vertex : this.posGraph) {
 			this.posGraph.getVertexData(vertex).first = (this.posGraph.getVertexData(vertex).first - x) * factorX +  x;
 		}
