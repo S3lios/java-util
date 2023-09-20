@@ -1,12 +1,12 @@
-package src.lexer;
+package lexer;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import src.parser.Result;
-import src.parser.Symbol;
+import parser.Result;
+import parser.Symbol;
 
 public class Token implements Symbol {
 

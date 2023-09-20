@@ -18,29 +18,36 @@ import neuralnetwork.function.activation.Sigmoid;
 import neuralnetwork.function.error.ErrorFunction;
 import neuralnetwork.function.error.MinSquareError;
 
-
+/**
+ * Simple implementation of a neural network. Based on the same API of tensorflow.
+ * 
+ */
 public class NeuralNetwork implements Serializable{
 
 	private static final long serialVersionUID = 1L;
+	
+	List<Layer> layers; // The layers of the network
 
-	List<Layer> layers;
+	double learningRate = 0.02; // The learning rate of the network
 
-	double learningRate = 0.02;
+	ErrorFunction errorFunction; // The error function of the network
 
-	ErrorFunction errorFunction;
+	boolean hasBeenTrained = false; // True if the network has already been trained at least once
 
-	boolean hasBeenTrained = false;
+	boolean bigVerbose = false; // True if the network should print a lot of information during the training when verbose is true
 
-	boolean bigVerbose = false;
+	boolean shuffle = true; // True if the network should shuffle the inputs during the training
 
-	boolean shuffle = true;
+	double lastError = 0; // The last error of the network during the training
 
-	double lastError = 0;
+	transient double[] logs = null; // The logs of error of the network during the training
 
-	transient double[] logs = null;
+	transient private boolean isInit = false; // True if the network has been initialized for the prediction (init for training implies init for prediction)
 
-	transient private boolean isInit = false;
-
+	 /**
+	  * Create a new empty neural network.
+	  * Default error function is the mean square error.
+	  */
 	public NeuralNetwork() {
 		layers = new ArrayList<Layer>();
 		errorFunction = new MinSquareError();
@@ -48,18 +55,38 @@ public class NeuralNetwork implements Serializable{
 
 
 	// SECTION : Public setup methods
+
+	/**
+	 * Set the learning rate of the network.
+	 * @param learningRate the learning rate of the network
+	 */
 	public void setLearningRate(double learningRate) {
 		this.learningRate = learningRate;
 	}
 
+	/**
+	 * Set the error function of the network.
+	 * @param bigVerbose
+	 */
 	public void setBigVerbose(boolean bigVerbose) {
 		this.bigVerbose = bigVerbose;
 	}
 
+	/**
+	 * Set the error function of the network.
+	 * @param shuffle
+	 */
 	public void setShuffle(boolean shuffle) {
 		this.shuffle = shuffle;
 	}
 
+	/**
+	 * Add a layer to the network.
+	 * @param layer
+	 * @see Layer
+	 * @see DenseLayer
+	 * @see ConvolutionalLayer
+	 */
 	public void addLayer(Layer layer) {
 		if (layers.size() > 0 && layer.getInputDimension() != layers.get(layers.size() - 1).getOutputDimension()) {
 			throw new IllegalArgumentException("Incompatible layer dimensions:" + layers.get(layers.size() - 1).getOutputDimension() + " -/-> " + layer.getInputDimension());
@@ -67,6 +94,12 @@ public class NeuralNetwork implements Serializable{
 		layers.add(layer);
 	}
 
+	/**
+	 * Set the error function of the network. Used for the training.
+	 * @param errorFunction
+	 * @see ErrorFunction
+	 * @see MinSquareError
+	 */
 	public void setErrorFunction(ErrorFunction errorFunction) {
 		if (hasBeenTrained) {
 			System.out.println("Warning: the error function has been changed after the training. May cause unexpected results. ");
@@ -75,11 +108,21 @@ public class NeuralNetwork implements Serializable{
 	}
 	// !SECTION : Public setup methods
 	// SECTION : Public saving methods
+	/**
+	 * Save the neural network in a file.
+	 * @param path the path of the file
+	 * @throws IOException if an error occurs during the saving
+	 */
 	public void save(String path) throws IOException {
 		save(path, false);
 	}
 
-
+	/**
+	 * Save the neural network in a file.
+	 * @param path the path of the file
+	 * @param verbose true if the network should print a message when the saving is finished
+	 * @throws IOException if an error occurs during the saving
+	 */
 	public void save(String path, boolean verbose) throws IOException {
 		FileOutputStream fos = new FileOutputStream(path);
 		ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -91,10 +134,23 @@ public class NeuralNetwork implements Serializable{
 		}
 	}
 
+	/**
+	 * Load a neural network from a file.
+	 * @param path the path of the file
+	 * @return the neural network
+	 * @throws IOException if an error occurs during the loading
+	 */
 	public static NeuralNetwork load(String path) throws IOException {
 		return load(path, false);
 	}
 
+	/**
+	 * Load a neural network from a file.
+	 * @param path the path of the file
+	 * @param verbose true if the network should print a message when the loading is finished. Also print the last error if the network has been trained.
+	 * @return the neural network
+	 * @throws IOException if an error occurs during the loading
+	 */
 	public static NeuralNetwork load(String path, boolean verbose) throws IOException {
 		FileInputStream fis = new FileInputStream(path);
 		ObjectInputStream ois = new ObjectInputStream(fis);
@@ -115,6 +171,10 @@ public class NeuralNetwork implements Serializable{
 		return nn;
 	}
 
+	/**
+	 * Charge the neural network with the parameters of another neural network.
+	 * @param nn the neural network to charge
+	 */
 	public void charge(NeuralNetwork nn) {
 		this.layers = nn.layers;
 		this.learningRate = nn.learningRate;
@@ -128,6 +188,16 @@ public class NeuralNetwork implements Serializable{
 	// !SECTION : Public saving methods
 
 	// SECTION : Public training methods
+
+	/**
+	 * Train the neural network with the given inputs and outputs.
+	 * @param inputs the inputs of the network
+	 * @param outputs the outputs of the network 
+	 * @param epochs the number of epochs
+	 * @param batchSize the size of the batch
+	 * @param momemtum the momemtum of the network. 0 for no momemtum, should be between 0 and 1.
+	 * @param verbose true if the network should print messages during the training to show the progress
+	 */
 	public void train(double[][] inputs, double[][] outputs, int epochs, int batchSize, double momemtum, boolean verbose) {
 		initForTrainig();
 
@@ -152,10 +222,6 @@ public class NeuralNetwork implements Serializable{
 		long start = System.currentTimeMillis();
 		long globalStart = start;
 		long end;
-
-		
-
-
 		for (int i = 0; i < epochs; i++) {
 
 			if (shuffle) {
@@ -213,6 +279,11 @@ public class NeuralNetwork implements Serializable{
 	// !SECTION : Public training methods
 	
 	// SECTION : Public prediction methods
+	/**
+	 * Compute the prediction of the network for the given input.
+	 * @param input the input of the network
+	 * @return the prediction of the network
+	 */
 	public double[] predict(double[] input) {
 		initForPredict();
 		setInput(input);
@@ -228,6 +299,7 @@ public class NeuralNetwork implements Serializable{
 	// !SECTION : Public prediction methods
 
 	// SECTION : Public information methods
+	@Override
 	public String toString() {
 		String s = "";
 		for (Layer layer : layers) {
@@ -236,14 +308,25 @@ public class NeuralNetwork implements Serializable{
 		return s;
 	}
 
+	/**
+	 * Get the logs of the error of the network during the training.
+	 * @return
+	 */
 	public double[] getLogs() {
 		return logs;
 	}
 
+	/**
+	 * Get the last error of the network during the training.
+	 * @return
+	 */
 	public double getLastError() {
 		return lastError;
 	}
 
+	/**
+	 * Print the information of the network.
+	 */
 	public void resume() {
 		System.out.println("---------------------------------");
 		System.out.println("Neural network resume:");
@@ -259,6 +342,10 @@ public class NeuralNetwork implements Serializable{
 		System.out.println("---------------------------------");
 	}
 
+	/**
+	 * Show the logs of the error of the network during the last training. Use a JPlot.
+	 * @see JPlot
+	 */
 	public void showLogs() {
 		JPlot plot = new JPlot();
 		plot.setSize(500, 500);
@@ -267,6 +354,7 @@ public class NeuralNetwork implements Serializable{
 	}
 	// !SECTION : Public information methods
 	// SECTION : Private training methods
+	
 	private void forward() {
 		for (int i = 0; i < layers.size(); i++) {
 			layers.get(i).forward();

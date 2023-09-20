@@ -17,8 +17,8 @@ import javax.swing.JPanel;
 
 import data.Pair;
 import functionnal.TriProcedure;
-import graph.AdjListGraph;
-import graph.Graph;
+import data.struct.graph.AdjListGraph;
+import data.struct.graph.Graph;
 
 public class JGraph<V,E> extends JPanel implements MouseListener, MouseWheelListener, MouseMotionListener, KeyListener   {
 	

@@ -5,8 +5,8 @@ import java.util.Map;
 import javax.swing.panel.JGraph;
 
 import data.Pair;
-import graph.AdjListGraph;
-import graph.Graph;
+import data.struct.graph.AdjListGraph;
+import data.struct.graph.Graph;
 
 public abstract class MinMax {
 	public static int CACHE_INIT = 1000;

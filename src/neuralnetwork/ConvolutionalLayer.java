@@ -1,12 +1,9 @@
 package neuralnetwork;
 
-import java.util.Arrays;
-
 import neuralnetwork.function.activation.ActivationFunction;
 import neuralnetwork.function.activation.ReLU;
 
 public class ConvolutionalLayer extends Layer {
-
 	int[] inputDimension;
 	int[] outputDimension;
 	int depth;
@@ -32,7 +29,7 @@ public class ConvolutionalLayer extends Layer {
 	private final int maxCubeIndex; // maximum index of input + padding for kernel to be applied
 
 	private ActivationFunction activationFunction;
-
+	
 	public ConvolutionalLayer(int[] inputDimension, int[] kernelDimension, int depth, int[] stride, int[] padding) {
 		this(inputDimension, kernelDimension, depth, stride, padding, new ReLU());
 	}

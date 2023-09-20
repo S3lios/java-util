@@ -1,4 +1,4 @@
-package src.parser;
+package parser;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -7,8 +7,8 @@ import java.util.function.Function;
 
 import iterator.EmptyIterator;
 import iterator.FullLinkedIterator;
-import src.lexer.Token;
-import src.lexer.TokenInstance;
+import lexer.Token;
+import lexer.TokenInstance;
 
 public class Rule {
 

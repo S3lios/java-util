@@ -1,4 +1,4 @@
-package src.lexer;
+package lexer;
 
 public class TokenInstance {
 	

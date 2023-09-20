@@ -1,12 +1,12 @@
-package src.parser;
+package parser;
 
 import java.util.Iterator;
 import java.util.List;
 
 import iterator.BreadthIterator;
 import iterator.EmptyIterator;
-import src.lexer.Token;
-import src.lexer.TokenInstance;
+import lexer.Token;
+import lexer.TokenInstance;
 
 public class NTSymbol implements Symbol {
 

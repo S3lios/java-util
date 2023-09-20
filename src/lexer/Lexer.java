@@ -1,4 +1,4 @@
-package src.lexer;
+package lexer;
 
 import java.util.LinkedList;
 import java.util.List;
